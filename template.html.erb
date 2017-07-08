@@ -1,0 +1,130 @@
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>Playlist</th>
+      <th>Track</th>
+      <th>Your Similiar Tracks</th>
+      <th>Search</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% rows.each_with_index do |row, i| %>
+      <tr>
+        <td>
+          <div
+            class="preview preview-thumbnail"
+            style="background-image: url(<%= row[:album][:image] %>)"
+          >
+            <i class="fa fa-play"></i>
+            <audio src="<%= row[:preview_url] %>">
+          </div>
+        </td>
+        <td>
+          <%= row[:playlist] %>
+        </td>
+        <td>
+          <strong><%= row[:track_name] %><br></strong>
+          <div class="track-details small">
+            <i class="fa fa-fw fa-user-circle"></i>
+            <%= row[:artists].join(", ") %><br>
+
+            <i class="fa fa-fw fa-music"></i>
+            <%= row[:album][:name] %><br>
+
+            <i class="fa fa-fw fa-clock-o"></i>
+            <%= row[:duration] %>
+          </div>
+        </td>
+        <td>
+          <% if row[:dupes].present? %>
+            <% row[:dupes].each do |dupe| %>
+              <div class="dupe preview">
+                <i class="fa fa-play"></i>
+                <div title="<%= dupe[:path] %>">
+                  <%= dupe[:name] %> -
+                  <%= dupe[:artist] %> -
+                  <%= dupe[:album] %>
+                  (<%= dupe[:duration] %>)
+                </div>
+                <audio src="<%= dupe[:path] %>">
+              </div>
+            <% end %>
+          <% else %>
+            <div class="small empty">
+              No tracks similiar to “<%= row[:query] %>”
+            </div>
+          <% end %>
+        </td>
+        <td class="text-right">
+          <a href="<%= row[:amazon_url] %>" target="_blank" class="d-block text-nowrap">Amazon →</a>
+          <a href="<%= row[:beatport_url] %>" target="_blank" class="d-block text-nowrap">Beatport →</a>
+          <a href="<%= row[:spotify_url] %>" target="_blank" class="d-block text-nowrap">Spotify →</a>
+          <a href="<%= row[:soundcloud_url] %>" target="_blank" class="d-block text-nowrap">SoundCloud →</a>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<style>
+body {
+  line-height: 1.6;
+}
+.small {
+  font-size: 0.8em;
+}
+.empty {
+  opacity: 0.4;
+}
+.dupe i {
+  float: left;
+}
+.dupe div {
+  margin-left: 20px;
+}
+.track-details {
+  margin-top: .4em;
+  font-weight: 300;
+}
+.track-details i {
+  opacity: 0.5;
+}
+.preview {
+  cursor: pointer;
+}
+.preview-thumbnail {
+  width: 64px;
+  height: 64px;
+  background-size: cover;
+  color: white;
+  text-align: center;
+  border-radius: 3px;
+}
+.preview-thumbnail i {
+  line-height: 64px;
+  font-size: 32px;
+  text-shadow: 0 0 16px black;
+}
+</style>
+
+<script>
+$('.preview').click(function(event) {
+  var preview = $(event.currentTarget);
+  var audio = preview.find('audio')[0];
+  var icon = preview.find('i');
+
+  if (audio.paused) {
+    audio.play();
+    icon.removeClass('fa-play').addClass('fa-pause');
+  } else {
+    audio.pause();
+    icon.removeClass('fa-pause').addClass('fa-play');
+  }
+})
+</script>
