@@ -1,0 +1,16 @@
+- path issue with cpanm: add ~/usr/local/Cellar/perl/5.26.0/binx
+- install: cpanm MP3::Tag
+- Use %q{} literal for path to tunes dir
+- Search for playlist by name with pagination for larger libs
+- Highlight search term in results
+- Try on method missing for accessing Dupe attributes
+- Search for artists in addition to title for dupes
+- Increase line height
+- Reference external stylesheet
+- https://simpleicons.org/
+- https://feathericons.com/
+- Try iframe for adding to cart without leaving page
+  - Split screen to load tracks on the right
+- Trim trailing slash from tunes dir to avoid double results
+- Move template reading to inner loop
+- sticky table header
