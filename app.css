@@ -1,0 +1,70 @@
+body {
+  line-height: 1.5;
+}
+.small {
+  font-size: 0.8em;
+}
+.empty {
+  opacity: 0.4;
+}
+.dupe {
+  line-height: 1.5;
+  vertical-align: middle;
+}
+.dupe i {
+  vertical-align: middle;
+  margin-right: 5px;
+  font-size: 11px;
+}
+.dupe div {
+  margin-left: 20px;
+}
+.track-details {
+  margin-left: -25px;
+  margin-top: .4em;
+  font-weight: 300;
+  line-height: 1.5;
+}
+.track-details small {
+  display: block;
+}
+.track-details i {
+  opacity: 0.33;
+  margin-right: 5px;
+
+}
+.preview {
+  cursor: pointer;
+}
+.preview-thumbnail {
+  width: 64px;
+  height: 64px;
+  background-size: cover;
+  color: white;
+  text-align: center;
+  border-radius: 3px;
+}
+.preview-thumbnail i {
+  line-height: 64px;
+  font-size: 32px;
+  text-shadow: 0 0 16px black;
+}
+.results {
+  line-height: 1.5;
+}
+.results a:visited {
+  color: green;
+  opacity: 0.5;
+}
+
+.table td, .table th {
+  vertical-align: middle;
+}
+
+.table td {
+  border: none;
+}
+
+.table tr:hover td {
+  background-color: #E6F5FF;
+}
