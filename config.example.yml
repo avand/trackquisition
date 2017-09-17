@@ -1,0 +1,5 @@
+tunes_dir: /Users/<YOU>/Dropbox/Tunes
+spotify:
+  username: <your-spotify-username>
+  client_id: <your-spotify-client-id>
+  client_secret: <your-spotify-client-secret>

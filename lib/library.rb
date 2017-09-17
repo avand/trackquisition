@@ -5,11 +5,10 @@ INDEX = 'tracks'
 TYPE = 'track'
 
 class Library
-  TUNES_DIR = '/Users/Avand/Dropbox/Tunes'
-
   attr_reader :client, :errors
 
-  def initialize(options = {})
+  def initialize(tunes_dir, options = {})
+    @tunes_dir = tunes_dir
     @client = Elasticsearch::Client.new options
     @errors = []
   end
@@ -21,7 +20,7 @@ class Library
 
     client.delete_by_query index: INDEX, body: { query: { match_all: {} } }
 
-    files = Dir.glob("#{TUNES_DIR}/**/*.mp3")
+    files = Dir.glob("#{@tunes_dir}/**/*.mp3")
 
     files.each_with_index do |file, i|
       begin

@@ -6,16 +6,20 @@ require 'yaml'
 require 'args_parser'
 require './lib/library.rb'
 
-$spotify = YAML.load_file 'spotify.yml'
+$config = YAML.load_file 'config.yml'
+
 TEMPLATE = 'template.html.erb'
 OUTPUT = 'results.html'
 
 def authenticate
-  RSpotify.authenticate($spotify['client_id'], $spotify['client_secret'])
+  RSpotify.authenticate(
+    $config['spotify']['client_id'],
+    $config['spotify']['client_secret']
+  )
 end
 
 def get_playlist(name)
-  user = RSpotify::User.find($spotify['username'])
+  user = RSpotify::User.find($config['spotify']['username'])
   user.playlists.find { |p| p.name == name }
 end
 
@@ -44,7 +48,7 @@ end
 
 if args.has_option? :build
   started_at = Time.now
-  library = Library.new
+  library = Library.new $config['tunes_dir']
   library.build
   finished_at = Time.now
 
@@ -62,7 +66,7 @@ if args.has_param? :playlist
   rows = []
   template = File.read(args[:template])
   File.delete(args[:output]) if File.exists?(args[:output])
-  library = Library.new
+  library = Library.new $config['tunes_dir']
 
   playlist.tracks.each do |track|
     dupes = library.search(title: track.name, artist: track.artists.first.name)['hits']['hits']
