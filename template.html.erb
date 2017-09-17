@@ -15,7 +15,12 @@
   </thead>
   <tbody>
     <% rows.each_with_index do |row, i| %>
-      <tr>
+      <tr class="track-row">
+        <td>
+          <button type="button" class="delete-control close" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </td>
         <td>
           <div
             class="preview preview-thumbnail"
@@ -126,5 +131,9 @@ $('.preview').click(function(event) {
     audio.pause();
     icon.removeClass('fa-pause').addClass('fa-play');
   }
-})
+});
+
+$('.delete-control').click(function(event) {
+  $(this).parents('.track-row').remove();
+});
 </script>
