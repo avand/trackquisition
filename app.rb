@@ -28,7 +28,7 @@ class Dupe
   end
 
   def method_missing(symbol)
-    metadata.match(/#{symbol}\s*:(.*)/)[1].strip
+    metadata.match(/#{symbol}\s*:(.*)/).try(:[], 1).try(:strip)
   end
 end
 
@@ -93,7 +93,7 @@ playlists.each do |playlist|
       duration: convert_ms_to_time_format(track.duration_ms),
       album: {
         name: track.album.name,
-        image: track.album.images.find { |i| i['height'] == 64 }['url']
+        image: track.album.images.find { |i| i['height'] == 64 }.try(:[], ['url'])
       },
       amazon_url: "https://www.amazon.com/s/ref=nb_sb_noss?url=search-alias%3Ddigital-music&field-keywords=#{URI.escape("#{track.name} #{track.artists.first.name}")}",
       beatport_url: "https://www.beatport.com/search?q=#{URI.escape(track.name)}",
