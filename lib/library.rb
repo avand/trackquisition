@@ -1,5 +1,5 @@
 require 'elasticsearch'
-require 'id3tag'
+require 'mp3info'
 
 INDEX = 'tracks'
 TYPE = 'track'
@@ -25,12 +25,15 @@ class Library
 
     files.each_with_index do |file, i|
       begin
-        tag = ID3Tag.read(File.open(file, 'rb'))
+        mp3 = Mp3Info.open(file)
 
         client.index index: INDEX, type: TYPE, body: {
-          title: tag.title,
-          artist: tag.artist,
-          album: tag.album
+          title: mp3.tag.title,
+          artist: mp3.tag.artist,
+          album: mp3.tag.album,
+          filename: File.basename(file),
+          path: file,
+          duration: mp3.length,
         }
 
         print '.' if i % 10 == 0
@@ -43,5 +46,18 @@ class Library
 
   def size
     client.count(index: INDEX)['count']
+  end
+
+  def search(options = {})
+    client.search({
+      index: INDEX,
+      body: {
+        query: {
+          match: {
+            title: options[:title],
+          }
+        },
+      }
+    })
   end
 end

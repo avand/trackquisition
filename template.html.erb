@@ -52,7 +52,8 @@
               <div class="dupe preview">
                 <i class="fa fa-play"></i>
                 <div title="<%= dupe[:path] %>">
-                  <%= dupe[:name] %> -
+                  <%= dupe[:score] %> -
+                  <%= dupe[:title] %> -
                   <%= dupe[:artist] %> -
                   <%= dupe[:album] %>
                   (<%= dupe[:duration] %>)
@@ -62,7 +63,7 @@
             <% end %>
           <% else %>
             <div class="small empty">
-              No tracks similiar to “<%= row[:query] %>”
+              No similar tracks
             </div>
           <% end %>
         </td>

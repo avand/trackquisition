@@ -3,89 +3,71 @@ require 'active_support/all'
 require 'pry'
 require 'json'
 require 'yaml'
+require 'args_parser'
+require './lib/library.rb'
 
 $spotify = YAML.load_file 'spotify.yml'
-TUNES_DIR = '~/Dropbox/Tunes'
 TEMPLATE = 'template.html.erb'
-RESULTS = 'results.html'
-CACHE_TTL = 3.days
-CACHE_TIME_PREFIX_FORMAT = '%Y%m%d'
-
-class Dupe
-  attr_accessor :filename, :path, :duration, :metadata, :album
-
-  def initialize(path)
-    @path = path
-    @filename = File.basename(path)
-  end
-
-  def metadata
-    @metadata ||= `ffmpeg -i "#{path}" 2>&1`
-  end
-
-  def duration
-    metadata.match(/Duration: (\d{2}:\d{2}:\d{2}\.\d{2})/)[1]
-  end
-
-  def method_missing(symbol)
-    metadata.match(/#{symbol}\s*:(.*)/).try(:[], 1).try(:strip)
-  end
-end
+OUTPUT = 'results.html'
 
 def authenticate
   RSpotify.authenticate($spotify['client_id'], $spotify['client_secret'])
 end
 
-def get_playlists
+def get_playlist(name)
   user = RSpotify::User.find($spotify['username'])
-  user.playlists.select { |p| p.name.in? ARGV }
-end
-
-def find_dupes(query)
-  cache = "cache/#{Time.now.strftime(CACHE_TIME_PREFIX_FORMAT)}#{query}"
-
-  paths = if File.exists?(cache)
-    File.read(cache)
-  else
-    output = `mp3find #{TUNES_DIR} -i -title \"#{query}\" 2> /dev/null`
-    output += `find #{TUNES_DIR} -iname "*#{query}*" -type f`
-    File.open(cache, "w") { |f| f.write(output) }
-    output
-  end.split("\n").uniq
-
-  paths.map { |p| Dupe.new(p) }
-end
-
-def cleanup_old_cache
-  cutoff = CACHE_TTL.ago.strftime(CACHE_TIME_PREFIX_FORMAT).to_i
-
-  Dir.glob("cache/*").each do |cache|
-    match = cache.match(/\d{8}/)[0]
-    File.delete(cache) if match.nil? || match.to_i <= cutoff
-  end
+  user.playlists.find { |p| p.name == name }
 end
 
 def convert_ms_to_time_format(ms)
-  Time.at(ms / 1000).utc.strftime("%H:%M:%S.#{ms % 1000}")
+  Time.at(ms / 1000).utc.strftime("%H:%M:%S")
 end
 
-cleanup_old_cache
-authenticate
-playlists = get_playlists
+args = ArgsParser.parse ARGV do
+  arg :output, 'output file', alias: :o, default: OUTPUT
+  arg :template, 'template file', alias: :t, default: TEMPLATE
+  arg :playlist, 'spotify playlist name', alias: :p
+  arg :build, 'build library', alias: :b
+  arg :search, 'search library', alias: :s
+  arg :verbose, 'more output', alias: :v
+end
 
-rows = []
-template = File.read(TEMPLATE)
-File.delete(RESULTS) if File.exists?(RESULTS)
+if args.has_param? :search
+  library = Library.new
+  results = library.search title: args[:search]
+  results['hits']['hits'].each do |hit|
+    source = hit['_source']
+    puts "#{hit['_score']} - #{source['title']} - #{source['artist']} - #{source['album']}"
+    puts hit if args.has_option? :verbose
+  end
+end
 
-playlists.each do |playlist|
+if args.has_option? :build
+  started_at = Time.now
+  library = Library.new
+  library.build
+  finished_at = Time.now
+
+  puts
+  puts "Time: #{finished_at - started_at}"
+  puts "Errors: #{library.errors.size}"
+  puts "Tracks: #{library.size}"
+  exit 1
+end
+
+if args.has_param? :playlist
+  authenticate
+  playlist = get_playlist args[:playlist]
+
+  rows = []
+  template = File.read(args[:template])
+  File.delete(args[:output]) if File.exists?(args[:output])
+  library = Library.new
+
   playlist.tracks.each do |track|
-    print track.name
-
-    query = track.name.split('(').first.strip.split('-').first.strip
-    dupes = find_dupes query
+    dupes = library.search(title: track.name, artist: track.artists.first.name)['hits']['hits']
 
     rows << {
-      query: query,
       preview_url: track.preview_url,
       playlist: playlist.name,
       track_name: track.name,
@@ -93,7 +75,7 @@ playlists.each do |playlist|
       duration: convert_ms_to_time_format(track.duration_ms),
       album: {
         name: track.album.name,
-        image: track.album.images.find { |i| i['height'] == 64 }.try(:[], ['url'])
+        image: track.album.images.find { |i| i['height'] == 64 }.try(:[], 'url')
       },
       amazon_url: "https://www.amazon.com/s/ref=nb_sb_noss?url=search-alias%3Ddigital-music&field-keywords=#{URI.escape("#{track.name} #{track.artists.first.name}")}",
       beatport_url: "https://www.beatport.com/search?q=#{URI.escape(track.name)}",
@@ -101,18 +83,20 @@ playlists.each do |playlist|
       soundcloud_url: "https://soundcloud.com/search?q=#{URI.escape(track.name)}",
       dupes: dupes.map { |dupe|
         {
-          filename: dupe.filename,
-          path: dupe.path,
-          duration: dupe.duration,
-          name: dupe.title,
-          artist: dupe.artist,
-          album: dupe.album,
+          score: dupe['_score'],
+          filename: dupe['_source']['filename'],
+          path: dupe['_source']['path'],
+          duration: convert_ms_to_time_format(dupe['_source']['duration'] * 1000),
+          title: dupe['_source']['title'],
+          artist: dupe['_source']['artist'],
+          album: dupe['_source']['album'],
         }
       },
     }
 
-    File.open(RESULTS, "w") { |f| f.write(ERB.new(template).result(binding)) }
-    print " → #{dupes.size} #{'dupe'.pluralize(dupes.size)} for \"#{query}\""
-    puts
+    File.open(OUTPUT, "w") { |f| f.write(ERB.new(template).result(binding)) }
+    print '.'
   end
+
+  `open #{args[:output]}`
 end
