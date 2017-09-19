@@ -14,9 +14,19 @@ class Library
   end
 
   def build
-    if !client.indices.exists index: INDEX
-      client.indices.create index: INDEX
-    end
+    client.indices.delete index: INDEX
+
+    client.indices.create index: INDEX, body: {
+      mappings: {
+        track: {
+          properties: {
+            title: { type: 'text' },
+            artist: { type: 'keyword' },
+            album: { type: 'keyword' }
+          }
+        }
+      }
+    }
 
     client.delete_by_query index: INDEX, body: { query: { match_all: {} } }
 
@@ -48,15 +58,24 @@ class Library
   end
 
   def search(options = {})
-    client.search({
-      index: INDEX,
-      body: {
-        query: {
-          match: {
-            title: options[:title],
-          }
-        },
+    query = { query: { bool: {} } }
+
+    if options[:title].present?
+      query[:query][:bool][:must] = {
+        match: {
+          title: options[:title]
+        }
       }
-    })
+    end
+
+    if options[:artist].present?
+      query[:query][:bool][:filter] = {
+        term: {
+          artist: options[:artist]
+        }
+      }
+    end
+
+    client.search({ index: INDEX, body: query })
   end
 end
