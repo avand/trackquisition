@@ -27,6 +27,8 @@ def convert_ms_to_time_format(ms)
   Time.at(ms / 1000).utc.strftime("%H:%M:%S")
 end
 
+library = Library.new $config['tunes_dir']
+
 args = ArgsParser.parse ARGV do
   arg :output, 'output file', alias: :o, default: OUTPUT
   arg :template, 'template file', alias: :t, default: TEMPLATE
@@ -37,7 +39,6 @@ args = ArgsParser.parse ARGV do
 end
 
 if args.has_param? :search
-  library = Library.new
   results = library.search title: args[:search]
   results['hits']['hits'].each do |hit|
     source = hit['_source']
@@ -48,7 +49,6 @@ end
 
 if args.has_option? :build
   started_at = Time.now
-  library = Library.new $config['tunes_dir']
   library.build
   finished_at = Time.now
 
@@ -66,7 +66,6 @@ if args.has_param? :playlist
   rows = []
   template = File.read(args[:template])
   File.delete(args[:output]) if File.exists?(args[:output])
-  library = Library.new $config['tunes_dir']
 
   playlist.tracks.each do |track|
     dupes = library.search(title: track.name, artist: track.artists.first.name)['hits']['hits']
