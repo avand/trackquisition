@@ -5,7 +5,7 @@ INDEX = 'tracks'
 TYPE = 'track'
 
 class Library
-  attr_reader :client, :errors
+  attr_reader :tunes_dir, :client, :errors
 
   def initialize(tunes_dir, options = {})
     @tunes_dir = tunes_dir
