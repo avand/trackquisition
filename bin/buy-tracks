@@ -22,7 +22,18 @@ end
 
 def get_playlist(name)
   user = RSpotify::User.find($config['spotify']['username'])
-  user.playlists.find { |p| p.name == name }
+
+  limit, offset = 50, 0
+  all_playlists = []
+
+  loop do
+    playlists = user.playlists(limit: limit, offset: offset)
+    all_playlists += playlists
+    break if playlists.size < limit
+    offset += limit
+  end
+
+  all_playlists.find { |p| p.name == name }
 end
 
 def convert_ms_to_time_format(ms)
@@ -70,6 +81,11 @@ if args.has_param? :playlist
   rows = []
   template = File.read(args[:template])
   File.delete(args[:output]) if File.exists?(args[:output])
+
+  if playlist.nil?
+    puts 'No playlist found with that name (shared playlists not supported)'
+    exit
+  end
 
   playlist.tracks.each do |track|
     dupes = library.search(title: track.name, artist: track.artists.first.name)['hits']['hits']
