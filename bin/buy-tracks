@@ -102,7 +102,7 @@ if args.has_param? :playlist
       },
       amazon_url: "https://www.amazon.com/s/ref=nb_sb_noss?url=search-alias%3Ddigital-music&field-keywords=#{URI.escape("#{track.name} #{track.artists.first.name}")}",
       beatport_url: "https://www.beatport.com/search?q=#{URI.escape(track.name)}",
-      spotify_url: track.external_urls['spotify'],
+      spotify_url: track.uri,
       soundcloud_url: "https://soundcloud.com/search?q=#{URI.escape(track.name)}",
       dupes: dupes.map { |dupe|
         {
