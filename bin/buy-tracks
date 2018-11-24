@@ -1,3 +1,5 @@
+#!/usr/bin/env ruby
+
 require 'rspotify'
 require 'active_support/all'
 require 'pry'
@@ -48,6 +50,8 @@ if args.has_param? :search
 end
 
 if args.has_option? :build
+  puts library.tunes_dir
+
   started_at = Time.now
   library.build
   finished_at = Time.now
