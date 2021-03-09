@@ -15,14 +15,6 @@ GEM
     coderay (1.1.2)
     domain_name (0.5.20170404)
       unf (>= 0.0.5, < 1.0.0)
-    elasticsearch (5.0.4)
-      elasticsearch-api (= 5.0.4)
-      elasticsearch-transport (= 5.0.4)
-    elasticsearch-api (5.0.4)
-      multi_json
-    elasticsearch-transport (5.0.4)
-      faraday
-      multi_json
     faraday (0.8.11)
       multipart-post (~> 1.2.0)
     hashie (3.5.6)
@@ -70,6 +62,7 @@ GEM
       jwt (>= 0.1.5)
       multi_json (>= 1.0.0)
     slop (3.6.0)
+    sqlite3 (1.4.2)
     unf (0.1.4)
       unf_ext
     unf_ext (0.0.7.4)
@@ -81,10 +74,11 @@ DEPENDENCIES
   activesupport
   args_parser
   beatport
-  elasticsearch
+  i18n
   pry
   rspotify
   ruby-mp3info
+  sqlite3
 
 BUNDLED WITH
-   1.13.3
+   1.17.2

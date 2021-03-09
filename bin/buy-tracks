@@ -71,7 +71,6 @@ if args.has_option? :build
   puts "Time: #{finished_at - started_at}"
   puts "Errors: #{library.errors.size}"
   puts "Tracks: #{library.size}"
-  exit 1
 end
 
 if args.has_param? :playlist
@@ -88,9 +87,11 @@ if args.has_param? :playlist
   end
 
   playlist.tracks.each do |track|
-    dupes = library.search(title: track.name, artist: track.artists.first.name)['hits']['hits']
+    signature = library.generate_signature(track.name, track.duration_ms)
+    dupes = library.search(track.name, track.duration_ms)
 
     rows << {
+      signature: signature,
       preview_url: track.preview_url,
       playlist: playlist.name,
       track_name: track.name,
@@ -104,17 +105,7 @@ if args.has_param? :playlist
       beatport_url: "https://www.beatport.com/search?q=#{URI.escape(track.name)}",
       spotify_url: track.uri,
       soundcloud_url: "https://soundcloud.com/search?q=#{URI.escape(track.name)}",
-      dupes: dupes.map { |dupe|
-        {
-          score: dupe['_score'],
-          filename: dupe['_source']['filename'],
-          path: dupe['_source']['path'],
-          duration: convert_ms_to_time_format(dupe['_source']['duration'] * 1000),
-          title: dupe['_source']['title'],
-          artist: dupe['_source']['artist'],
-          album: dupe['_source']['album'],
-        }
-      },
+      dupes: dupes,
     }
 
     File.open(OUTPUT, "w") { |f| f.write(ERB.new(template).result(binding)) }
