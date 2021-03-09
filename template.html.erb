@@ -7,31 +7,23 @@
 <table class="table table-striped">
   <thead>
     <tr>
-      <th></th>
-      <th></th>
-      <th>Track</th>
-      <th>Your Similiar Tracks</th>
-      <th>Search</th>
+      <th style="width: 40%;">Track</th>
+      <th style="width: 40%;">Your Similiar Tracks</th>
+      <th style="width: 10%;">Buy It</th>
+      <th style="width: 10%;"></th>
     </tr>
   </thead>
   <tbody>
     <% rows.each_with_index do |row, i| %>
       <tr class="track-row">
         <td>
-          <button type="button" class="delete-control close" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </td>
-        <td style="padding-right: 30px;">
           <div
-            class="preview preview-thumbnail"
-            style="background-image: url(<%= row[:album][:image] %>)"
+            class="preview preview-thumbnail pull-left"
+            style="background-image: url(<%= row[:album][:image] %>); margin-right: 30px;"
           >
             <i class="fa fa-play"></i>
             <audio src="<%= row[:preview_url] %>">
           </div>
-        </td>
-        <td>
           <strong><%= row[:track_name] %><br></strong>
           <div class="track-details">
             <small>
@@ -48,6 +40,11 @@
               <i class="fa fa-fw fa-clock-o"></i>
               <%= row[:duration] %>
             </small>
+
+            <small>
+              <i class="fa fa-fw fa-clock-o"></i>
+              <%= row[:signature] %>
+            </small>
           </div>
         </td>
         <td>
@@ -59,7 +56,7 @@
                   <%= dupe[:title] %> -
                   <%= dupe[:artist] %> -
                   <%= dupe[:album] %>
-                  (<%= dupe[:duration] %>)
+                  (<%= Time.at(dupe[:duration] / 1000).utc.strftime("%H:%M:%S") %>)
                 </small>
                 <audio src="<%= dupe[:path] %>">
               </div>
@@ -77,6 +74,11 @@
             <a href="<%= row[:spotify_url] %>" class="d-block text-nowrap">Spotify →</a>
             <a href="<%= row[:soundcloud_url] %>" target="_blank" class="d-block text-nowrap">SoundCloud →</a>
           </small>
+        </td>
+        <td>
+          <button type="button" class="delete-control close" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
         </td>
       </tr>
     <% end %>
@@ -100,5 +102,10 @@ $('.preview').click(function(event) {
 
 $('.delete-control').click(function(event) {
   $(this).parents('.track-row').remove();
+});
+
+$('.results a').click(function(event) {
+  window.open(event.target.href, 'buy', 'height=600,width=1050');
+  event.preventDefault();
 });
 </script>
