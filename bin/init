@@ -1,0 +1,3 @@
+#!/usr/bin/env ruby
+`cp config.example.yml config.yml`
+puts "Open config.yml and configure based on your setup"

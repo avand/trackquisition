@@ -1,111 +1,119 @@
-<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
-<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
-<link rel="stylesheet" href="./app.css">
-
-<table class="table table-striped">
-  <thead>
-    <tr>
-      <th style="width: 40%;">Track</th>
-      <th style="width: 40%;">Your Similiar Tracks</th>
-      <th style="width: 10%;">Buy It</th>
-      <th style="width: 10%;"></th>
-    </tr>
-  </thead>
-  <tbody>
-    <% rows.each_with_index do |row, i| %>
-      <tr class="track-row">
-        <td>
-          <div
-            class="preview preview-thumbnail pull-left"
-            style="background-image: url(<%= row[:album][:image] %>); margin-right: 30px;"
-          >
-            <i class="fa fa-play"></i>
-            <audio src="<%= row[:preview_url] %>">
-          </div>
-          <strong><%= row[:track_name] %><br></strong>
-          <div class="track-details">
-            <small>
-              <i class="fa fa-fw fa-user-circle"></i>
-              <%= row[:artists].join(", ") %>
-            </small>
-
-            <small>
-              <i class="fa fa-fw fa-music"></i>
-              <%= row[:album][:name] %>
-            </small>
-
-            <small>
-              <i class="fa fa-fw fa-clock-o"></i>
-              <%= row[:duration] %>
-            </small>
-
-            <small>
-              <i class="fa fa-fw fa-clock-o"></i>
-              <%= row[:signature] %>
-            </small>
-          </div>
-        </td>
-        <td>
-          <% if row[:dupes].present? %>
-            <% row[:dupes].each do |dupe| %>
-              <div class="dupe preview">
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title><%= @playlist %></title>
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+    <link rel="stylesheet" href="./app.css">
+  </head>
+  <body>
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th style="width: 40%;">Track</th>
+          <th style="width: 40%;">Your Similiar Tracks</th>
+          <th style="width: 10%;">Buy It</th>
+          <th style="width: 10%;"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @rows.each_with_index do |row, i| %>
+          <tr class="track-row">
+            <td>
+              <div
+                class="preview preview-thumbnail pull-left"
+                style="background-image: url(<%= row[:album][:image] %>); margin: 0 30px 30px;"
+              >
                 <i class="fa fa-play"></i>
-                <small title="<%= dupe[:path] %>">
-                  <%= dupe[:title] %> -
-                  <%= dupe[:artist] %> -
-                  <%= dupe[:album] %>
-                  (<%= Time.at(dupe[:duration] / 1000).utc.strftime("%H:%M:%S") %>)
-                </small>
-                <audio src="<%= dupe[:path] %>">
+                <audio src="<%= row[:preview_url] %>">
               </div>
-            <% end %>
-          <% else %>
-            <div class="small empty">
-              No similar tracks
-            </div>
-          <% end %>
-        </td>
-        <td class="text-right results">
-          <small>
-            <a href="<%= row[:amazon_url] %>" target="_blank" class="d-block text-nowrap">Amazon →</a>
-            <a href="<%= row[:beatport_url] %>" target="_blank" class="d-block text-nowrap">Beatport →</a>
-            <a href="<%= row[:spotify_url] %>" class="d-block text-nowrap">Spotify →</a>
-            <a href="<%= row[:soundcloud_url] %>" target="_blank" class="d-block text-nowrap">SoundCloud →</a>
-          </small>
-        </td>
-        <td>
-          <button type="button" class="delete-control close" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </td>
-      </tr>
-    <% end %>
-  </tbody>
-</table>
+              <strong><%= row[:track_name] %><br></strong>
+              <div class="track-details">
+                <small>
+                  <i class="fa fa-fw fa-user-circle"></i>
+                  <%= row[:artists].join(", ") %>
+                </small>
 
-<script>
-$('.preview').click(function(event) {
-  var preview = $(event.currentTarget);
-  var audio = preview.find('audio')[0];
-  var icon = preview.find('i');
+                <small>
+                  <i class="fa fa-fw fa-music"></i>
+                  <%= row[:album][:name] %>
+                </small>
 
-  if (audio.paused) {
-    audio.play();
-    icon.removeClass('fa-play').addClass('fa-pause');
-  } else {
-    audio.pause();
-    icon.removeClass('fa-pause').addClass('fa-play');
-  }
-});
+                <small>
+                  <i class="fa fa-fw fa-clock-o"></i>
+                  <%= row[:duration] %>
+                </small>
 
-$('.delete-control').click(function(event) {
-  $(this).parents('.track-row').remove();
-});
+                <small>
+                  <i class="fa fa-fw fa-certificate"></i>
+                  <%= row[:signature] %>
+                </small>
+              </div>
+            </td>
+            <td>
+              <% if row[:dupes].length > 0 %>
+                <% row[:dupes].each do |dupe| %>
+                  <div class="dupe preview">
+                    <i class="fa fa-play"></i>
+                    <small title="<%= dupe[:path] %>">
+                      <%= dupe[:title] %> -
+                      <%= dupe[:artist] %> -
+                      <%= dupe[:album] %>
+                      (<%= Time.at(dupe[:duration] / 1000).utc.strftime("%H:%M:%S") %>)
+                    </small>
+                    <audio src="<%= dupe[:path] %>">
+                  </div>
+                <% end %>
+              <% else %>
+                <div class="small empty">
+                  No similar tracks
+                </div>
+              <% end %>
+            </td>
+            <td class="text-right results">
+              <small>
+                <a href="<%= row[:amazon_url] %>" target="_blank" class="d-block text-nowrap">Amazon →</a>
+                <a href="<%= row[:beatport_url] %>" target="_blank" class="d-block text-nowrap">Beatport →</a>
+                <a href="<%= row[:spotify_url] %>" class="d-block text-nowrap">Spotify →</a>
+                <a href="<%= row[:soundcloud_url] %>" target="_blank" class="d-block text-nowrap">SoundCloud →</a>
+              </small>
+            </td>
+            <td>
+              <button type="button" class="delete-control close" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
 
-$('.results a').click(function(event) {
-  window.open(event.target.href, 'buy', 'height=600,width=1050');
-  event.preventDefault();
-});
-</script>
+    <script>
+    $('.preview').click(function(event) {
+      var preview = $(event.currentTarget);
+      var audio = preview.find('audio')[0];
+      var icon = preview.find('i');
+
+      if (audio.paused) {
+        audio.play();
+        icon.removeClass('fa-play').addClass('fa-pause');
+      } else {
+        audio.pause();
+        icon.removeClass('fa-pause').addClass('fa-play');
+      }
+    });
+
+    $('.delete-control').click(function(event) {
+      $(this).parents('.track-row').remove();
+    });
+
+    $('.results a').click(function(event) {
+      window.open(event.target.href, 'buy', 'height=600,width=1050');
+      event.preventDefault();
+    });
+    </script>
+  </body>
+</html>

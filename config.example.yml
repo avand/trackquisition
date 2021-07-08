@@ -1,4 +1,5 @@
-tunes_dir: /Users/<YOU>/Dropbox/Tunes
+tracks_dir: /Users/<your-system-username>/<your-tracks-dir>
+output: results.html
 spotify:
   username: <your-spotify-username>
   client_id: <your-spotify-client-id>
