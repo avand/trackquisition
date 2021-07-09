@@ -11,7 +11,7 @@ class Webpage
     File.delete(path) if File.exists?(path)
   end
 
-  def add_track(spotify_track, signature, dupes)
+  def add_track(spotify_track, signature, similar_tracks)
     @rows << {
       signature: signature,
       preview_url: spotify_track.preview_url,
@@ -26,7 +26,7 @@ class Webpage
       beatport_url: beatport_url(spotify_track.name),
       spotify_url: spotify_track.uri,
       soundcloud_url: soundcloud_url(spotify_track.name),
-      dupes: dupes,
+      similar_tracks: similar_tracks,
     }
   end
 

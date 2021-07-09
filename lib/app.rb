@@ -19,7 +19,7 @@ end
 
 if args.has_option? :playlists
   Playlist.all.each do |playlist|
-    puts "#{playlist.name} (#{playlist.external_urls["spotify"]})"
+    puts "#{playlist.id} #{playlist.name} (#{playlist.external_urls["spotify"]})"
   end
 elsif args.has_param? :playlist
   begin
@@ -29,11 +29,14 @@ elsif args.has_param? :playlist
 
   library.build display_errors: args[:verbose]
 
+  print 'Cross-referencing playlist tracks agains your existing library...'
   rows = playlist.spotify_tracks.each do |spotify_track|
     signature = Track.generate_signature(spotify_track.name, spotify_track.duration_ms)
-    dupes = library[signature]
-    webpage.add_track(spotify_track, signature, dupes)
+    similar_tracks = library[signature]
+    webpage.add_track(spotify_track, signature, similar_tracks)
+    print '.'
   end
+  puts 'done!'
 
   webpage.render
   webpage.open

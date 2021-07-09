@@ -16,7 +16,7 @@ class Library
 
     files = Dir.glob("#{@tracks_dir}/**/*.mp3")
 
-    print 'Building your library'
+    print 'Analyzing your library...'
 
     files.each_with_index do |file, i|
       begin

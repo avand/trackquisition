@@ -8,8 +8,9 @@ class Playlist
   end
 
   def initialize(name)
-    RSpotify.authenticate Config['spotify']['client_id'], Config['spotify']['client_secret']
+    print "Loading playlist, #{name}..."
     @spotify_playlist = self.class.find(name)
+    puts 'done!'
   end
 
   def spotify_tracks
@@ -35,6 +36,6 @@ class Playlist
       offset += limit
     end
 
-    return all_playlists
+    return all_playlists.sort { |a, b| a.name <=> b.name }
   end
 end

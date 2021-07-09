@@ -54,17 +54,17 @@
               </div>
             </td>
             <td>
-              <% if row[:dupes].length > 0 %>
-                <% row[:dupes].each do |dupe| %>
+              <% if row[:similar_tracks].length > 0 %>
+                <% row[:similar_tracks].each do |track| %>
                   <div class="dupe preview">
                     <i class="fa fa-play"></i>
-                    <small title="<%= dupe[:path] %>">
-                      <%= dupe[:title] %> -
-                      <%= dupe[:artist] %> -
-                      <%= dupe[:album] %>
-                      (<%= Time.at(dupe[:duration] / 1000).utc.strftime("%H:%M:%S") %>)
+                    <small title="<%= track[:path] %>">
+                      <%= track[:title] %> -
+                      <%= track[:artist] %> -
+                      <%= track[:album] %>
+                      (<%= Time.at(track[:duration] / 1000).utc.strftime("%H:%M:%S") %>)
                     </small>
-                    <audio src="<%= dupe[:path] %>">
+                    <audio src="<%= track[:path] %>">
                   </div>
                 <% end %>
               <% else %>

@@ -43,7 +43,7 @@ class Track
     mod_title = title.downcase[0...5]
     BAD_WORDS.each { |bad_word| mod_title = mod_title.gsub(bad_word, '') }
     mod_title = mod_title.gsub(/[^A-Za-z0-9]/, '')
-    mod_duration = duration / 1000
+    mod_duration = duration / 10_000
     [mod_title, mod_duration].join('-')
   end
 end
