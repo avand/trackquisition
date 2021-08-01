@@ -1,7 +1,7 @@
 require 'mp3info'
 
 class Track
-  BAD_WORDS = ['remix', 'explicit', 'clean', 'original mix']
+  FILTERS = ['remix', 'explicit', 'clean', 'original mix', /\s/, /[^A-Za-z0-9]/]
 
   def initialize(file)
     @file = file
@@ -40,10 +40,13 @@ class Track
   end
 
   def self.generate_signature(title, duration)
-    mod_title = title.downcase[0...5]
-    BAD_WORDS.each { |bad_word| mod_title = mod_title.gsub(bad_word, '') }
-    mod_title = mod_title.gsub(/[^A-Za-z0-9]/, '')
-    mod_duration = duration / 10_000
-    [mod_title, mod_duration].join('-')
+    # Lower case
+    title_part = title.downcase
+    # Filter patterns and words
+    FILTERS.each { |word_or_pattern| title_part = title_part.gsub(word_or_pattern, '') }
+    # Take only the first five characters
+    title_part = title_part[0...5]
+    duration_part = (duration / 10_000.0).round
+    [title_part, duration_part].join('-')
   end
 end
