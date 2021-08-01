@@ -1,0 +1,9 @@
+#!/usr/bin/env ruby
+
+# Add lib dir to the search paths
+$: << File.join(File.dirname(__FILE__), '..', 'lib')
+
+require 'irb'
+require_relative '../lib/app.rb'
+
+IRB.start

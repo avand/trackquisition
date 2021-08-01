@@ -1,4 +1,6 @@
 #!/usr/bin/env ruby
+
+# Add lib dir to the search paths
 $: << File.join(File.dirname(__FILE__), '..', 'lib')
 
 require 'bundler/inline'
@@ -15,3 +17,4 @@ gemfile do
 end
 
 require './lib/app.rb'
+require './lib/commands/acquire.rb'
